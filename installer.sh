@@ -5,7 +5,7 @@
 #                                                                      #
 #            Pterodactyl Installer, Updater, Remover and More          #
 #            Copyright 2025, Malthe K, <me@malthe.cc> hej              # 
-#  https://github.com/guldkage/Pterodactyl-Installer/blob/main/LICENSE #
+#  https://github.com/SkyNestOffc/installer/blob/main/LICENSE #
 #                                                                      #
 #  This script is not associated with the official Pterodactyl Panel.  #
 #  You may not remove this line                                        #
@@ -210,7 +210,7 @@ panel_conf() {
 
     chown -R www-data:www-data /var/www/pterodactyl/*
 
-    curl -o /etc/systemd/system/pteroq.service https://raw.githubusercontent.com/guldkage/Pterodactyl-Installer/main/configs/pteroq.service
+    curl -o /etc/systemd/system/pteroq.service https://raw.githubusercontent.com/SkyNestOffc/installer/main/configs/pteroq.service
     (crontab -l ; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run >> /dev/null 2>&1") | crontab -
     systemctl enable --now redis-server
     systemctl enable --now pteroq.service
@@ -236,7 +236,7 @@ panel_conf() {
     if [ "$SSLSTATUS" == "true" ]; then
         if [ "$WEBSERVER" == "NGINX" ]; then
             rm -rf /etc/nginx/sites-enabled/default
-            curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/guldkage/Pterodactyl-Installer/main/configs/pterodactyl-nginx-ssl.conf
+            curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/SkyNestOffc/installer/main/configs/pterodactyl-nginx-ssl.conf
             if [ "$CUSTOMSSL" == true ]; then
                 sed -i -e "s@ssl_certificate /etc/letsencrypt/live/<domain>/fullchain.pem;@ssl_certificate ${CERTIFICATEPATH};@g" /etc/nginx/sites-enabled/pterodactyl.conf
                 sed -i -e "s@ssl_certificate_key /etc/letsencrypt/live/<domain>/privkey.pem;@ssl_certificate_key ${PRIVATEKEYPATH};@g" /etc/nginx/sites-enabled/pterodactyl.conf
@@ -246,7 +246,7 @@ panel_conf() {
             systemctl stop apache2
             certbot certonly --standalone -d $FQDN --staple-ocsp --no-eff-email -m $EMAIL --agree-tos
             a2dissite 000-default.conf && systemctl reload apache2
-            curl -o /etc/apache2/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/guldkage/Pterodactyl-Installer/main/configs/pterodactyl-apache-ssl.conf
+            curl -o /etc/apache2/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/SkyNestOffc/installer/main/configs/pterodactyl-apache-ssl.conf
             if [ "$CUSTOMSSL" == true ]; then
                 sed -i -e "s@SSLCertificateFile /etc/letsencrypt/live/<domain>/fullchain.pem@SSLCertificateFile ${CERTIFICATEPATH}@g" /etc/nginx/sites-enabled/pterodactyl.conf
                 sed -i -e "s@SSLCertificateKeyFile /etc/letsencrypt/live/<domain>/privkey.pem@SSLCertificateKeyFile ${PRIVATEKEYPATH}@g" /etc/nginx/sites-enabled/pterodactyl.conf
@@ -257,11 +257,11 @@ panel_conf() {
     else
         if [ "$WEBSERVER" == "NGINX" ]; then
             rm -rf /etc/nginx/sites-enabled/default
-            curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/guldkage/Pterodactyl-Installer/main/configs/pterodactyl-nginx.conf
+            curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/SkyNestOffc/installer/main/configs/pterodactyl-nginx.conf
             sed -i -e "s@<domain>@${FQDN}@g" /etc/nginx/sites-enabled/pterodactyl.conf
         elif [ "$WEBSERVER" == "Apache" ]; then
             a2dissite 000-default.conf && systemctl reload apache2
-            curl -o /etc/apache2/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/guldkage/Pterodactyl-Installer/main/configs/pterodactyl-apache.conf
+            curl -o /etc/apache2/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/SkyNestOffc/installer/main/configs/pterodactyl-apache.conf
             sed -i -e "s@<domain>@${FQDN}@g" /etc/apache2/sites-enabled/pterodactyl.conf
             a2enmod rewrite
         fi
@@ -664,7 +664,7 @@ wings_full(){
             fi
 
         curl -L -o /usr/local/bin/wings "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_$([[ "$(uname -m)" == "x86_64" ]] && echo "amd64" || echo "arm64")"
-        curl -o /etc/systemd/system/wings.service https://raw.githubusercontent.com/guldkage/Pterodactyl-Installer/main/configs/wings.service
+        curl -o /etc/systemd/system/wings.service https://raw.githubusercontent.com/SkyNestOffc/installer/main/configs/wings.service
         chmod u+x /usr/local/bin/wings
         clear
         echo ""
@@ -755,7 +755,7 @@ phpmyadminweb() {
 
     if [ "$PHPMYADMIN_SSLSTATUS" = "true" ]; then
         rm -rf /etc/nginx/sites-enabled/default
-        curl -o /etc/nginx/sites-enabled/phpmyadmin.conf https://raw.githubusercontent.com/guldkage/Pterodactyl-Installer/main/configs/phpmyadmin-ssl.conf || { echo "Error downloading NGINX config"; exit 1; }
+        curl -o /etc/nginx/sites-enabled/phpmyadmin.conf https://raw.githubusercontent.com/SkyNestOffc/installer/main/configs/phpmyadmin-ssl.conf || { echo "Error downloading NGINX config"; exit 1; }
         sed -i -e "s@<domain>@${PHPMYADMIN_FQDN}@g" /etc/nginx/sites-enabled/phpmyadmin.conf || { echo "Error editing NGINX config"; exit 1; }
         systemctl stop nginx || { echo "Error stopping NGINX"; exit 1; }
         certbot certonly --standalone -d $PHPMYADMIN_FQDN --staple-ocsp --no-eff-email -m $PHPMYADMIN_EMAIL --agree-tos || { echo "Error with Certbot"; exit 1; }
@@ -764,7 +764,7 @@ phpmyadminweb() {
     fi
 
     if [ "$PHPMYADMIN_SSLSTATUS" = "false" ]; then
-        curl -o /etc/nginx/sites-enabled/phpmyadmin.conf https://raw.githubusercontent.com/guldkage/Pterodactyl-Installer/main/configs/phpmyadmin.conf || { echo "Error downloading NGINX config"; exit 1; }
+        curl -o /etc/nginx/sites-enabled/phpmyadmin.conf https://raw.githubusercontent.com/SkyNestOffc/installer/main/configs/phpmyadmin.conf || { echo "Error downloading NGINX config"; exit 1; }
         sed -i -e "s@<domain>@${PHPMYADMIN_FQDN}@g" /etc/nginx/sites-enabled/phpmyadmin.conf || { echo "Error editing NGINX config"; exit 1; }
         systemctl restart nginx || { echo "Error restarting NGINX"; exit 1; }
         phpmyadmin_finish
@@ -1052,7 +1052,7 @@ switch(){
         echo "    The script is now changing your Pterodactyl Domain."
         echo "      This may take a couple seconds for the SSL part, as SSL certificates are being generated."
         rm /etc/nginx/sites-enabled/pterodactyl.conf
-        curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/guldkage/Pterodactyl-Installer/main/configs/pterodactyl-nginx-ssl.conf || exit || warning "Pterodactyl Panel not installed!"
+        curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/SkyNestOffc/installer/main/configs/pterodactyl-nginx-ssl.conf || exit || warning "Pterodactyl Panel not installed!"
         sed -i -e "s@<domain>@${DOMAINSWITCH}@g" /etc/nginx/sites-enabled/pterodactyl.conf
         systemctl stop nginx
         certbot certonly --standalone -d $DOMAINSWITCH --staple-ocsp --no-eff-email -m $EMAILSWITCHDOMAINS --agree-tos || exit || warning "Errors accured."
@@ -1073,7 +1073,7 @@ switch(){
     if  [ "$SSLSWITCH" =  "false" ]; then
         echo "[!] Switching your domain.. This wont take long!"
         rm /etc/nginx/sites-enabled/pterodactyl.conf || exit || echo "An error occurred. Could not delete file." || exit
-        curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/guldkage/Pterodactyl-Installer/main/configs/pterodactyl-nginx.conf || exit || warning "Pterodactyl Panel not installed!"
+        curl -o /etc/nginx/sites-enabled/pterodactyl.conf https://raw.githubusercontent.com/SkyNestOffc/installer/main/configs/pterodactyl-nginx.conf || exit || warning "Pterodactyl Panel not installed!"
         sed -i -e "s@<domain>@${DOMAINSWITCH}@g" /etc/nginx/sites-enabled/pterodactyl.conf
         systemctl restart nginx
         echo ""
@@ -1197,7 +1197,7 @@ echo "-------------------------------------------------------------------"
 echo ""
 echo "Pterodactyl Installer @ v3.0"
 echo "Copyright 2025, Malthe K, <me@malthe.cc>"
-echo "https://github.com/guldkage/Pterodactyl-Installer"
+echo "https://github.com/SkyNestOffc/installer"
 echo ""
 echo "Security notice:"
 echo "This script connects to ipinfo.io to check IP address organization."
